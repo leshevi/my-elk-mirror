@@ -21,17 +21,17 @@ jobs:
       - name: Mirror Elasticsearch
         run: |
           docker pull docker.elastic.co/elasticsearch/elasticsearch:8.19.10
-          docker tag docker.elastic.co/elasticsearch/elasticsearch:8.19.10 ghcr.io/${{ github.repository }}/elasticsearch:8.19.10
-          docker push ghcr.io/${{ github.repository }}/elasticsearch:8.19.10
+          docker tag docker.elastic.co/elasticsearch/elasticsearch:8.19.10 ghcr.io/leshevi/elasticsearch:8.19.10
+          docker push ghcr.io/leshevi/elasticsearch:8.19.10
 
       - name: Mirror Kibana
         run: |
           docker pull docker.elastic.co/kibana/kibana:8.19.10
-          docker tag docker.elastic.co/kibana/kibana:8.19.10 ghcr.io/${{ github.repository }}/kibana:8.19.10
-          docker push ghcr.io/${{ github.repository }}/kibana:8.19.10
+          docker tag docker.elastic.co/kibana/kibana:8.19.10 ghcr.io/leshevi/kibana:8.19.10
+          docker push ghcr.io/leshevi/kibana:8.19.10
 
       - name: Mirror Logstash
         run: |
           docker pull docker.elastic.co/logstash/logstash:8.19.10
-          docker tag docker.elastic.co/logstash/logstash:8.19.10 ghcr.io/${{ github.repository }}/logstash:8.19.10
-          docker push ghcr.io/${{ github.repository }}/logstash:8.19.10
+          docker tag docker.elastic.co/logstash/logstash:8.19.10 ghcr.io/leshevi/logstash:8.19.10
+          docker push ghcr.io/leshevi/logstash:8.19.10
