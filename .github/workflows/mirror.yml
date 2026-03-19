@@ -2,6 +2,15 @@ name: Mirror ELK Images
 
 on:
   workflow_dispatch:
+    inputs:
+      image_name:
+        description: 'Какой образ зеркалим? (например: filebeat)'
+        required: true
+        default: 'filebeat'
+      image_tag:
+        description: 'Тег образа (например: 8.19.10)'
+        required: true
+        default: '8.19.10'
 
 permissions:
   contents: read
@@ -18,20 +27,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.PAT_TOKEN }} 
 
-      - name: Mirror Elasticsearch
+      - name: Pull, Tag and Push
         run: |
-          docker pull docker.elastic.co/elasticsearch/elasticsearch:8.19.10
-          docker tag docker.elastic.co/elasticsearch/elasticsearch:8.19.10 ghcr.io/leshevi/elasticsearch:8.19.10
-          docker push ghcr.io/leshevi/elasticsearch:8.19.10
-
-      - name: Mirror Kibana
-        run: |
-          docker pull docker.elastic.co/kibana/kibana:8.19.10
-          docker tag docker.elastic.co/kibana/kibana:8.19.10 ghcr.io/leshevi/kibana:8.19.10
-          docker push ghcr.io/leshevi/kibana:8.19.10
-
-      - name: Mirror Logstash
-        run: |
-          docker pull docker.elastic.co/logstash/logstash:8.19.10
-          docker tag docker.elastic.co/logstash/logstash:8.19.10 ghcr.io/leshevi/logstash:8.19.10
-          docker push ghcr.io/leshevi/logstash:8.19.10
+          # 1. Формируем полные имена
+          SOURCE="docker.elastic.co/${{ github.event.inputs.image_name }}/${{ github.event.inputs.image_name }}:${{ github.event.inputs.image_tag }}"
+          TARGET="ghcr.io/${{ github.actor }}/${{ github.event.inputs.image_name }}:${{ github.event.inputs.image_tag }}"
+          
+          # 2. Выполняем перенос
+          echo "Mirroring $SOURCE to $TARGET..."
+          docker pull $SOURCE
+          docker tag $SOURCE $TARGET
+          docker push $TARGETname: 
