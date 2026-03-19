@@ -29,9 +29,18 @@ jobs:
 
       - name: Pull, Tag and Push
         run: |
-          # 1. Формируем полные имена
-          SOURCE="docker.elastic.co/${{ github.event.inputs.image_name }}/${{ github.event.inputs.image_name }}:${{ github.event.inputs.image_tag }}"
-          TARGET="ghcr.io/${{ github.actor }}/${{ github.event.inputs.image_name }}:${{ github.event.inputs.image_tag }}"
+          IMAGE_NAME="${{ github.event.inputs.image_name }}"
+          IMAGE_TAG="${{ github.event.inputs.image_tag }}"
+          
+          # Логика для разных путей Elastic
+          if [[ "$IMAGE_NAME" == "filebeat" || "$IMAGE_NAME" == "metricbeat" ]]; then
+            SOURCE="docker.elastic.co/beats/$IMAGE_NAME:$IMAGE_TAG"
+          else
+            # Для elasticsearch, kibana, logstash путь обычно плоский
+            SOURCE="docker.elastic.co/$IMAGE_NAME/$IMAGE_NAME:$IMAGE_TAG"
+          fi
+          
+          TARGET="ghcr.io/${{ github.actor }}/$IMAGE_NAME:$IMAGE_TAG"
           
           # 2. Выполняем перенос
           echo "Mirroring $SOURCE to $TARGET..."
