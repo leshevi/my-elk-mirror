@@ -1,23 +1,21 @@
-name: Mirror ELK Images
+name: Mirror Images to GHCR
 
 on:
   workflow_dispatch:
     inputs:
-      image_name:
-        description: 'Какой образ зеркалим? (например: filebeat)'
+      source_image:
+        description: 'postgres:17-alpine'
         required: true
-        default: 'filebeat'
-      image_tag:
-        description: 'Тег образа (например: 8.19.10)'
+      target_name:
+        description: 'my-postgress'
         required: true
-        default: '8.19.10'
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  push_to_ghcr:
+  mirror:
     runs-on: ubuntu-latest
     steps:
       - name: Login to GHCR
@@ -29,24 +27,11 @@ jobs:
 
       - name: Pull, Tag and Push
         run: |
-          # 1. Принудительно переводим логин в нижний регистр (важно для TARGET)
           USER_LOWER=$(echo "${{ github.actor }}" | tr '[:upper:]' '[:lower:]')
-          IMG_NAME="${{ github.event.inputs.image_name }}"
-          IMG_TAG="${{ github.event.inputs.image_tag }}"
+          SRC="${{ github.event.inputs.source_image }}"
+          TGT="ghcr.io/${USER_LOWER}/${{ github.event.inputs.target_name }}:latest"
 
-          # 2. Определяем SOURCE (Elastic использует разные пути для Beats и ES/Kibana)
-          if [[ "$IMG_NAME" == "filebeat" || "$IMG_NAME" == "metricbeat" ]]; then
-            SRC="docker.elastic.co/beats/$IMG_NAME:$IMG_TAG"
-          else
-            SRC="docker.elastic.co/$IMG_NAME/$IMG_NAME:$IMG_TAG"
-          fi
-
-          # 3. Формируем TARGET (строго маленькими буквами)
-          TGT="ghcr.io/${USER_LOWER}/${IMG_NAME}:${IMG_TAG}"
-
-          # 4. Выполняем
-          echo "Source: $SRC"
-          echo "Target: $TGT"
+          echo "Mirroring $SRC to $TGT"
           
           docker pull "$SRC"
           docker tag "$SRC" "$TGT"
