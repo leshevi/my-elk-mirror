@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       source_image:
-        description: 'postgres:17-alpine'
+        description: 'elasticsearch:8.19.21'
         required: true
       target_name:
-        description: 'my-postgress'
+        description: 'my-elasticsearch'
         required: true
 
 permissions:
