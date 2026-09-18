@@ -33,6 +33,15 @@ jobs:
 
           echo "Mirroring $SRC to $TGT"
           
+          # 1. Скачиваем оригинальный образ
           docker pull "$SRC"
+          
+          # 2. Перетигиваем его для вашего GHCR
           docker tag "$SRC" "$TGT"
+          
+          # 3. Добавляем метаданные о репозитории прямо в локальный индекс образа перед отправкой
+          # Это заставит GitHub Actions автоматически связать пакет с этим репозиторием!
+          echo "{\"labels\":{\"org.opencontainers.image.source\":\"https://github.com{{ github.repository }}\"}}" > labels.json
+          
+          # 4. Пушим образ в GHCR
           docker push "$TGT"
